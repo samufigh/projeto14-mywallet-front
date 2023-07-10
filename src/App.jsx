@@ -4,9 +4,12 @@ import HomePage from "./pages/HomePage"
 import SignInPage from "./pages/SignInPage"
 import SignUpPage from "./pages/SignUpPage"
 import TransactionsPage from "./pages/TransactionPage"
+import { ContextProvider } from "./contexts/Context";
 
 export default function App() {
+  
   return (
+    <ContextProvider>
     <PagesContainer>
       <BrowserRouter>
         <Routes>
@@ -17,6 +20,7 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </PagesContainer>
+    </ContextProvider>
   )
 }
 

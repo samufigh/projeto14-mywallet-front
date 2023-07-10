@@ -1,32 +1,93 @@
-import styled from "styled-components"
-import { BiExit } from "react-icons/bi"
-import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import styled from "styled-components";
+import { BiExit } from "react-icons/bi";
+import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
+import { useContext, useEffect } from "react";
+import { Context } from "../contexts/Context";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import apiAuth from "../services/apiAuth";
 
 export default function HomePage() {
+  const { name, setName, token, setTransactions, transactions, loading, setLoading } = useContext(Context);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    const authentication = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    
+    const res = apiAuth.transations(authentication);
+
+    res.then((answer) => {
+        setTransactions(answer.data);
+        setName(answer.data.name)
+        console.log(answer.data)
+        setLoading(false);
+      })
+      .catch((error) => {
+        alert(error.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const calculateBalance = () => {
+    let balance = 0;
+
+    transactions.forEach((transaction) => {
+      if (transaction.type === "entrada") {
+        balance += transaction.value;
+      } else if (transaction.type === "saida") {
+        balance -= transaction.value;
+      }
+    });
+    return balance;
+  };
+
+  const formatBalance = (balance) => {
+    const formattedBalance = balance.replace(".", ",");
+
+    if (balance < 0) {
+      return formattedBalance.substring(1);
+    }
+
+    return formattedBalance;
+  };
+
+
+  function Logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    navigate("/");
+  }
+  
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, Fulano</h1>
-        <BiExit />
+        <h1>Olá, {name}</h1>
+        <BiExit onClick={Logout}/>
       </Header>
 
       <TransactionsContainer>
         <ul>
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
+        {
+            transactions.map((transaction, id) => (
+              <ListItemContainer key={id}>
+                <div>
+                  <span>{transaction.date}</span>
+                  <strong data-test="registry-name">{transaction.description}</strong>
+                </div>
+                <Value data-test="registry-amount" type={transaction.type} color={formatBalance(transaction.value) >= 0 ? "positivo" : "negativo"}>
+                  {transaction.value.replace(".", ",")}
+                </Value>
+              </ListItemContainer>
+            ))}
         </ul>
 
         <article>
@@ -37,19 +98,29 @@ export default function HomePage() {
 
 
       <ButtonsContainer>
+        
         <button>
+        <StyledLink to="/nova-transacao/entrada">
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
+        </StyledLink>
         </button>
         <button>
+        <StyledLink to="/nova-transacao/saida">
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
+        </StyledLink>
         </button>
       </ButtonsContainer>
 
     </HomeContainer>
   )
 }
+const StyledLink = styled(Link)`
+  display: block;
+  width: 100%;
+  height: 100%;
+`;
 
 const HomeContainer = styled.div`
   display: flex;
