@@ -10,6 +10,7 @@ export default function HomePage() {
   const { name, setName, token, setTransactions, transactions, loading, setLoading } = useContext(Context);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     if (!token) {
       navigate("/");
@@ -58,8 +59,8 @@ export default function HomePage() {
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, {name}</h1>
-        <BiExit onClick={Logout}/>
+        <h1 data-test="user-name">Olá, {name}</h1>
+        <BiExit data-test="logout" onClick={Logout}/>
       </Header>
 
       <TransactionsContainer>
@@ -88,7 +89,7 @@ export default function HomePage() {
       <ButtonsContainer>
         
         <button>
-        <StyledLink to="/nova-transacao/entrada">
+        <StyledLink data-test="new-income" to="/nova-transacao/entrada">
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </StyledLink>
