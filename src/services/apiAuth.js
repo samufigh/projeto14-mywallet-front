@@ -14,6 +14,12 @@ function transations(auth){
     const promise = axios.get(`${import.meta.env.VITE_API_URL}/home`, auth)
     return promise
 }
-const apiAuth = {login, signUp, transations}
+
+function newTransation(body){
+    const promise = axios.get(`${import.meta.env.VITE_API_URL}/nova-transacao/:tipo`, auth)
+    return promise
+}
+
+const apiAuth = {login, signUp, transations, newTransation}
 
 export default apiAuth

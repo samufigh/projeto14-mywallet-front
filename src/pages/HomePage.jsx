@@ -3,7 +3,6 @@ import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { useContext, useEffect } from "react";
 import { Context } from "../contexts/Context";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import apiAuth from "../services/apiAuth";
 
@@ -26,9 +25,8 @@ export default function HomePage() {
     const res = apiAuth.transations(authentication);
 
     res.then((answer) => {
-        setTransactions(answer.data);
+        setTransactions(answer.data.transactions);
         setName(answer.data.name)
-        console.log(answer.data)
         setLoading(false);
       })
       .catch((error) => {
@@ -39,25 +37,15 @@ export default function HomePage() {
 
   const calculateBalance = () => {
     let balance = 0;
-
     transactions.forEach((transaction) => {
+    
       if (transaction.type === "entrada") {
-        balance += transaction.value;
+        balance += parseFloat(transaction.value);
       } else if (transaction.type === "saida") {
-        balance -= transaction.value;
+        balance -= parseFloat(transaction.value);
       }
     });
-    return balance;
-  };
-
-  const formatBalance = (balance) => {
-    const formattedBalance = balance.replace(".", ",");
-
-    if (balance < 0) {
-      return formattedBalance.substring(1);
-    }
-
-    return formattedBalance;
+    return balance.toFixed(2).replace(".", ",");
   };
 
 
@@ -66,7 +54,7 @@ export default function HomePage() {
     localStorage.removeItem("name");
     navigate("/");
   }
-  
+
   return (
     <HomeContainer>
       <Header>
@@ -83,8 +71,8 @@ export default function HomePage() {
                   <span>{transaction.date}</span>
                   <strong data-test="registry-name">{transaction.description}</strong>
                 </div>
-                <Value data-test="registry-amount" type={transaction.type} color={formatBalance(transaction.value) >= 0 ? "positivo" : "negativo"}>
-                  {transaction.value.replace(".", ",")}
+                <Value data-test="registry-amount" type={transaction.type} color={transaction.type=="entrada" ? "positivo" : "negativo"}>
+                  {parseFloat(transaction.value).toFixed(2).replace(".", ",")}
                 </Value>
               </ListItemContainer>
             ))}
@@ -92,7 +80,7 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={(calculateBalance().replace(",", ".")>=0) ? "positivo" : "negativo"}>{calculateBalance()}</Value>
         </article>
       </TransactionsContainer>
 

@@ -13,7 +13,6 @@ export default function SignInPage() {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const storedName = localStorage.getItem("name");
     console.log(storedToken)
     if (storedToken) {
       setToken(storedToken);
