@@ -81,20 +81,20 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={(calculateBalance().replace(",", ".")>=0) ? "positivo" : "negativo"}>{calculateBalance()}</Value>
+          <Value data-test="total-amount" color={(calculateBalance().replace(",", ".")>=0) ? "positivo" : "negativo"}>{calculateBalance()}</Value>
         </article>
       </TransactionsContainer>
 
 
       <ButtonsContainer>
         
-        <button>
-        <StyledLink data-test="new-income" to="/nova-transacao/entrada">
+        <button data-test="new-income">
+        <StyledLink to="/nova-transacao/entrada">
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </StyledLink>
         </button>
-        <button>
+        <button data-test="new-expense">
         <StyledLink to="/nova-transacao/saida">
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
