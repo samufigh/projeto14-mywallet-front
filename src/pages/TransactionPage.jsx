@@ -6,11 +6,12 @@ import axios from "axios";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
-  const { token, setLoading } = useContext(Context);
+  const { setLoading } = useContext(Context);
   const [description, setDescription] = useState("");
   const [value, setValue] = useState(0);
   const { tipo } = useParams();
 
+  const token = localStorage.token
   function Transaction(event) {
     event.preventDefault();
 
@@ -19,7 +20,6 @@ export default function TransactionsPage() {
         Authorization: `Bearer ${token}`,
       },
     };
-    console.log(token)
     const transaction = {
       value: parseFloat(value),
       description,
@@ -36,7 +36,6 @@ export default function TransactionsPage() {
         alert(error.message);
       });
   }
-  console.log(value)
   return (
     <TransactionsContainer>
       <h1>Nova {tipo}</h1>
